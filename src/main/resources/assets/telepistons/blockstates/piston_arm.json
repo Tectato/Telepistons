@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "telepistons:block/piston_arm",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "telepistons:block/piston_arm",
+      "y": 0
+    },
+    "facing=south": {
+      "model": "telepistons:block/piston_arm",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "telepistons:block/piston_arm",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "telepistons:block/piston_arm",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "telepistons:block/piston_arm",
+      "x": 90
+    }
+  }
+}
