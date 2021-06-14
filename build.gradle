@@ -1,35 +1,32 @@
 plugins {
-	id 'fabric-loom' version '0.4-SNAPSHOT'
+	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
 dependencies {
-    minecraft "com.mojang:minecraft:1.16.5"
-    mappings "net.fabricmc:yarn:1.16.5+build.5:v2"
+    minecraft "com.mojang:minecraft:1.17"
+    mappings "net.fabricmc:yarn:1.17+build.1:v2"
     modImplementation "net.fabricmc:fabric-loader:0.11.3"
             
     //Fabric api
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.32.0+1.16"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.34.9+1.17"
     //modImplementation ":g4mespeed:1.1.3:mc1.16.5-release"
 }
 
 processResources {
+	duplicatesStrategy = 'include'
 	inputs.property "version", project.version
 
 	from(sourceSets.main.resources.srcDirs) {
 		include "fabric.mod.json"
 		expand "version": project.version
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
 	}
 }
 
