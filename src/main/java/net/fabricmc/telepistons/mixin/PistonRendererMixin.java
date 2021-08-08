@@ -34,23 +34,9 @@ public class PistonRendererMixin {
 			  if (world != null) {
 				 BlockPos blockPos = pistonBlockEntity.getPos();
 				 Direction dir = pistonBlockEntity.getMovementDirection();
-				 //float dist = pistonBlockEntity.getProgress(f);
 				 float dist = 1-(Math.abs(pistonBlockEntity.getRenderOffsetX(f))
 						 + Math.abs(pistonBlockEntity.getRenderOffsetY(f))
 						 + Math.abs(pistonBlockEntity.getRenderOffsetZ(f)));
-				 /*if(pistonBlockEntity.getProgress(f) < .2f && Telepistons.random.nextFloat() < .2f) {
-					 float dx = dir.getOffsetX();
-					 float dy = dir.getOffsetY();
-					 float dz = dir.getOffsetZ();
-					 world.addParticle(ParticleTypes.CLOUD,
-							 blockPos.getX()+Telepistons.random.nextFloat()*Math.abs(dy+dz),
-							 blockPos.getY()+Telepistons.random.nextFloat()*Math.abs(dx+dz),
-							 blockPos.getZ()+Telepistons.random.nextFloat()*Math.abs(dx+dy),
-							 .0625f*dx,
-							 .0625f*dy,
-							 .0625f*dz);
-				 }*/
-				 //BlockState blockState = pistonBlockEntity.getPushedBlock();
 		    	 BlockModelRenderer.enableBrightnessCache();
 		    	 matrixStack.push();
 		    	 float extendRate = 0.5F;
@@ -78,54 +64,6 @@ public class PistonRendererMixin {
 			    				 (1 - dist*Math.abs(dz)));
 		    			 matrixStack.translate(-.5f,-.5f,-.5f);
 		    		 }
-		    		 /*
-		    		 float dx = Math.abs(dir.getOffsetX());
-		    		 float dy = Math.abs(dir.getOffsetY());
-		    		 float dz = Math.abs(dir.getOffsetZ());
-		    		 
-		    		 //matrixStack.translate(-.5f, -.5f, -.5f);
-		    		 if(pistonBlockEntity.isExtending()) {
-			    		 matrixStack.scale(
-			    				 (1-dx) + pistonBlockEntity.getProgress(f)*dx,
-			    				 (1-dy) + pistonBlockEntity.getProgress(f)*dy,
-			    				 (1-dz) + pistonBlockEntity.getProgress(f)*dz);
-		    		 } else {
-		    			 matrixStack.scale(
-			    				 ((1) - pistonBlockEntity.getProgress(f)*dx),
-			    				 ((1) - pistonBlockEntity.getProgress(f)*dy),
-			    				 ((1) - pistonBlockEntity.getProgress(f)*dz));
-		    		 }
-		    		 //matrixStack.translate(.5f, .5f, .5f);
-		    		 
-		    		 int signflip = pistonBlockEntity.isExtending() ? 1 : -1;
-		    		 dx = dir.getOffsetX();
-		    		 dy = dir.getOffsetY();
-		    		 dz = dir.getOffsetZ();
-		    		 
-		    		 if(dx + dy + dz < 0) {
-						 matrixStack.translate(
-		    					 .5f*dx*pistonBlockEntity.getProgress(f),
-		    					 .5f*dy*pistonBlockEntity.getProgress(f),
-		    					 .5f*dz*pistonBlockEntity.getProgress(f));
-						 if(pistonBlockEntity.isExtending()) {
-							 //matrixStack.translate(-1.5f*dx, -1.5f*dy, -1.5f*dz);
-						 }
-		    		 }
-		    		 
-		    		 if(pistonBlockEntity.isExtending()) {
-		    			 matrixStack.translate(.5f*dx,.5f*dy,.5f*dz);
-					 } else {
-						 matrixStack.translate(-.5f*dx,-.5f*dy,-.5f*dz);
-					 }
-		    		 
-		    		 
-		    		 //matrixStack.translate(-.5f*signflip*dx,-.5f*signflip*dy,-.5f*signflip*dz);
-		    		 /*
-		    		 matrixStack.translate(
-	    					 .5f*dx*pistonBlockEntity.getProgress(f),
-	    					 .5f*dy*pistonBlockEntity.getProgress(f),
-	    					 .5f*dz*pistonBlockEntity.getProgress(f));
-		    		 */
 		    	 } else {
 			    	 matrixStack.translate(extendRate*(double)pistonBlockEntity.getRenderOffsetX(f), extendRate*(double)pistonBlockEntity.getRenderOffsetY(f), extendRate*(double)pistonBlockEntity.getRenderOffsetZ(f));
 			    	 

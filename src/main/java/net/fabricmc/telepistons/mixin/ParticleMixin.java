@@ -26,13 +26,6 @@ public class ParticleMixin {
 			float dy = dir.getOffsetY();
 			float dz = dir.getOffsetZ();
 			for(int i=0; i<Telepistons.particleCount; i++) {
-				/*world.addParticle(ParticleTypes.CLOUD,
-						pos.getX()+.5f+(dx*.5f)+.5f*(.5f-Telepistons.random.nextFloat())*Math.abs(dy+dz),
-						pos.getY()+.5f+(dy*.5f)+.5f*(.5f-Telepistons.random.nextFloat())*Math.abs(dx+dz),
-						pos.getZ()+.5f+(dz*.5f)+.5f*(.5f-Telepistons.random.nextFloat())*Math.abs(dx+dy),
-						.0625f*dx * signFlip,
-						.0625f*dy * signFlip,
-						.0625f*dz * signFlip);*/
 				world.addParticle(ParticleTypes.CLOUD,
 						pos.getX()+.5f+(dx*.5f),
 						pos.getY()+.5f+(dy*.5f),
