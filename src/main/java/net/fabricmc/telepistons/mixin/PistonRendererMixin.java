@@ -73,7 +73,7 @@ public class PistonRendererMixin {
 					 }
 		    	 }
 		    	 BlockState blockState2 = (BlockState)((BlockState)Telepistons.PISTON_ARM.getDefaultState()).with(PistonHeadBlock.FACING, pistonBlockEntity.getFacing());
-		    	 this.method_3575(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
+		    	 this.renderModel(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
 
 		    	 matrixStack.pop();
 		    	 BlockModelRenderer.disableBrightnessCache();
@@ -81,7 +81,7 @@ public class PistonRendererMixin {
 		}
 	}
 	
-	@Shadow private void method_3575(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i) {
+	@Shadow private void renderModel(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i) {
 		
 	}
 }
