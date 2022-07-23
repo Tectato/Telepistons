@@ -47,12 +47,12 @@ public class Telepistons implements ModInitializer {
 		Identifier scissorPack = new Identifier("telepistons","scissor_pistons");
 		Identifier bellowsPack = new Identifier("telepistons","bellows_pistons");
 		Identifier stickySidesPack = new Identifier("telepistons","sticky_sides");
-		Identifier noSteam = new Identifier("telepistons","no_steam");
+		Identifier enableSteam = new Identifier("telepistons","enable_steam");
 		FabricLoader.getInstance().getModContainer("telepistons").ifPresent(container -> {
 			ResourceManagerHelper.registerBuiltinResourcePack(scissorPack, container, ResourcePackActivationType.NORMAL);
 			ResourceManagerHelper.registerBuiltinResourcePack(bellowsPack, container, ResourcePackActivationType.NORMAL);
 			ResourceManagerHelper.registerBuiltinResourcePack(stickySidesPack, container, ResourcePackActivationType.NORMAL);
-			ResourceManagerHelper.registerBuiltinResourcePack(noSteam, container, ResourcePackActivationType.DEFAULT_ENABLED);
+			ResourceManagerHelper.registerBuiltinResourcePack(enableSteam, container, ResourcePackActivationType.DEFAULT_ENABLED);
 		});
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
@@ -104,7 +104,7 @@ public class Telepistons implements ModInitializer {
 
 					resourceMap = manager.findResources("", path -> path.toString().endsWith("block/piston_particle.json"));
 
-					steamOverride = true;
+					steamOverride = false;
 					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
 						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
 							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
@@ -113,9 +113,9 @@ public class Telepistons implements ModInitializer {
 							JsonObject settings = json.get("telepistons").getAsJsonObject();
 							steamOverride = settings.get("particleOverride").getAsBoolean();
 
-							System.out.println("[Telepistons] Read particle override setting successfully");
+							System.out.println("[Telepistons] Read particle setting successfully");
 						} catch(Exception e) {
-							System.out.println("[Telepistons] Particle override file erroneous");
+							System.out.println("[Telepistons] Particle setting file erroneous");
 						}
 					}
 
