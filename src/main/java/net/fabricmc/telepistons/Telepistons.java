@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.telepistons.simpleLibs.simpleConfig.SimpleConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.resource.Resource;
@@ -30,6 +31,7 @@ public class Telepistons implements ModInitializer {
 	public static final Block PISTON_ARM = new PistonArm(FabricBlockSettings.of(Material.METAL).hardness(80.0f));
 	public static Random random = new Random();
 	public static boolean emitSteam;
+	public static boolean steamOverride = true;
 	public static int particleCount;
 	public static boolean squishArm;
 
@@ -45,10 +47,12 @@ public class Telepistons implements ModInitializer {
 		Identifier scissorPack = new Identifier("telepistons","scissor_pistons");
 		Identifier bellowsPack = new Identifier("telepistons","bellows_pistons");
 		Identifier stickySidesPack = new Identifier("telepistons","sticky_sides");
+		Identifier noSteam = new Identifier("telepistons","no_steam");
 		FabricLoader.getInstance().getModContainer("telepistons").ifPresent(container -> {
 			ResourceManagerHelper.registerBuiltinResourcePack(scissorPack, container, ResourcePackActivationType.NORMAL);
 			ResourceManagerHelper.registerBuiltinResourcePack(bellowsPack, container, ResourcePackActivationType.NORMAL);
 			ResourceManagerHelper.registerBuiltinResourcePack(stickySidesPack, container, ResourcePackActivationType.NORMAL);
+			ResourceManagerHelper.registerBuiltinResourcePack(noSteam, container, ResourcePackActivationType.NORMAL);
 		});
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
@@ -70,7 +74,7 @@ public class Telepistons implements ModInitializer {
 							JsonObject settings = json.get("telepistons").getAsJsonObject();
 
 							squishArm = settings.get("squish").getAsBoolean();
-							particleCount = Math.max(settings.get("particles").getAsInt(),0);
+							particleCount = Math.max(settings.get("particles").getAsInt(), 0);
 							if(squishArm) {
 								JsonArray factorArr = settings.get("squishedScale").getAsJsonArray();
 								squishFactorsZ = new Vec3f(
@@ -97,7 +101,25 @@ public class Telepistons implements ModInitializer {
 							System.out.println("[Telepistons] Error while trying to read settings, using standard values");
 						}
 					}
-					emitSteam = particleCount > 0;
+
+					resourceMap = manager.findResources("", path -> path.toString().endsWith("block/piston_particle.json"));
+
+					steamOverride = true;
+					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
+						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
+							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+							JsonObject json = JsonHelper.deserialize(streamReader);
+
+							JsonObject settings = json.get("telepistons").getAsJsonObject();
+							steamOverride = settings.get("particleOverride").getAsBoolean();
+
+							System.out.println("[Telepistons] Read particle override setting successfully");
+						} catch(Exception e) {
+							System.out.println("[Telepistons] Particle override file erroneous");
+						}
+					}
+
+					emitSteam = steamOverride ? (particleCount > 0) : false;
 				}
 			}
 		);
