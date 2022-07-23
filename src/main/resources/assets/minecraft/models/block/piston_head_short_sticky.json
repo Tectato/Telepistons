@@ -3,8 +3,7 @@
         "piston_side": "block/piston_side",
         "piston_arm": "telepistons:block/piston_arm",
         "piston_top_sticky": "block/piston_top_sticky",
-        "piston_top": "block/piston_top",
-	"particle": "block/piston_side"
+        "piston_top": "block/piston_top"
     },
     "display": {
         "gui": {
@@ -61,18 +60,6 @@
                 "west": { "texture": "#piston_side", "uv": [ 0, 0, 16, 4 ], "rotation": 270 },
                 "up": { "texture": "#piston_side", "uv": [ 0, 0, 16, 4 ] },
                 "down": { "texture": "#piston_side", "uv": [ 0, 0, 16, 4 ], "rotation": 180 }
-            }
-        },
-        {
-            "name": "Arm",
-            "from": [ 5, 5, 12 ], 
-            "to": [ 11, 11, 20 ], 
-            "faces": {
-                "north": { "texture": "#piston_arm", "uv": [ 6, 10, 12, 16 ] },
-                "east": { "texture": "#piston_arm", "uv": [ 0, 8, 6, 16 ], "rotation": 90 },
-                "west": { "texture": "#piston_arm", "uv": [ 0, 8, 6, 16 ], "rotation": 270 },
-                "up": { "texture": "#piston_arm", "uv": [ 0, 8, 6, 16 ] },
-                "down": { "texture": "#piston_arm", "uv": [ 0, 8, 6, 16 ], "rotation": 180 }
             }
         }
     ]

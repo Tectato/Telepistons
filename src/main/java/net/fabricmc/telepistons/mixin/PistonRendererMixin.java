@@ -1,5 +1,7 @@
 package net.fabricmc.telepistons.mixin;
 
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -41,29 +43,60 @@ public class PistonRendererMixin {
 		    	 matrixStack.push();
 		    	 float extendRate = 0.5F;
 		    	 if(Telepistons.squishArm) {
+					 boolean extending = pistonBlockEntity.isExtending();
 		    		 float dx = dir.getOffsetX();
 		    		 float dy = dir.getOffsetY();
 		    		 float dz = dir.getOffsetZ();
 
-		    		 if(pistonBlockEntity.isExtending()) {
-		    			 matrixStack.translate(.5f*dist*dx, .5f*dist*dy, .5f*dist*dz);
-		    			 matrixStack.translate(-.75f*dx, -.75f*dy, -.75f*dz);
-		    			 matrixStack.translate(.5f, .5f, .5f);
-			    		 matrixStack.scale(
-			    				 (1 - Math.abs(dx)) + dist*Math.abs(dx),
-			    				 (1 - Math.abs(dy)) + dist*Math.abs(dy),
-			    				 (1 - Math.abs(dz)) + dist*Math.abs(dz));
-			    		 matrixStack.translate(-.5f,-.5f,-.5f);
-		    		 } else {
-		    			 matrixStack.translate(.5f*dist*dx, .5f*dist*dy, .5f*dist*dz);
-		    			 matrixStack.translate(-.75f*dx, -.75f*dy, -.75f*dz);
-		    			 matrixStack.translate(.5f, .5f, .5f);
-		    			 matrixStack.scale(
-			    				 (1 - dist*Math.abs(dx)),
-			    				 (1 - dist*Math.abs(dy)),
-			    				 (1 - dist*Math.abs(dz)));
-		    			 matrixStack.translate(-.5f,-.5f,-.5f);
-		    		 }
+					 Vec3f squishFactorsSrc =
+							  (dx != 0f)?Telepistons.squishFactorsX
+							 :(dy != 0f)?Telepistons.squishFactorsY
+							 :Telepistons.squishFactorsZ;
+
+					 Vec3f squishFactors = new Vec3f(squishFactorsSrc.getX(), squishFactorsSrc.getY(), squishFactorsSrc.getZ());
+
+					 matrixStack.translate(.5f,.5f,.5f);
+
+					 if(extending) {
+						 squishFactors.lerp(new Vec3f(1f,1f,1f),dist);
+
+						 matrixStack.translate(.25f*dx,.25f*dy,.25f*dz);
+						 matrixStack.translate(-dx,-dy,-dz);
+
+						 /*
+						 matrixStack.scale(
+								 (1 - Math.abs(dx)) + dist*Math.abs(dx),
+								 (1 - Math.abs(dy)) + dist*Math.abs(dy),
+								 (1 - Math.abs(dz)) + dist*Math.abs(dz));*/
+
+						 matrixStack.scale(
+								 squishFactors.getX(),
+								 squishFactors.getY(),
+								 squishFactors.getZ());
+
+						 matrixStack.translate(-.5f - .25f*dx,-.5f - .25f*dy,-.5f - .25f*dz);
+						 matrixStack.translate(.5f*dx,.5f*dy,.5f*dz);
+
+						 matrixStack.translate(.5f*dx,.5f*dy,.5f*dz);
+					 } else {
+						 Vec3f squish = new Vec3f(1f,1f,1f);
+						 squish.lerp(squishFactors,dist);
+
+						 matrixStack.translate(-.25f*dx,-.25f*dy,-.25f*dz);
+
+						 /*
+						 matrixStack.scale(
+								 1 - dist*Math.abs(dx),
+								 1 - dist*Math.abs(dy),
+								 1 - dist*Math.abs(dz));*/
+						 matrixStack.scale(
+								 squish.getX(),
+								 squish.getY(),
+								 squish.getZ());
+
+						 matrixStack.translate(-.5f - .25f*dx,-.5f - .25f*dy,-.5f - .25f*dz);
+						 matrixStack.translate(-.5f*dx,-.5f*dy,-.5f*dz);
+					 }
 		    	 } else {
 			    	 matrixStack.translate(extendRate*(double)pistonBlockEntity.getRenderOffsetX(f), extendRate*(double)pistonBlockEntity.getRenderOffsetY(f), extendRate*(double)pistonBlockEntity.getRenderOffsetZ(f));
 			    	 
