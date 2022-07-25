@@ -59,14 +59,15 @@ public class Telepistons implements ModInitializer {
 			new SimpleSynchronousResourceReloadListener() {
 				@Override
 				public Identifier getFabricId(){
-					return new Identifier("telepistons","piston_arm");
+					return new Identifier("telepistons","models");
 				}
 
 				@Override
 				public void reload(ResourceManager manager){
-					Map<Identifier, Resource> resourceMap = manager.findResources("", path -> path.toString().endsWith("block/piston_arm.json"));
+					Map<Identifier, Resource> resourceMap = manager.findResources("models", path -> path.toString().endsWith("piston_arm.json"));
 
 					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
+						System.out.println(entry.getValue().getResourcePackName());
 						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
 							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 							JsonObject json = JsonHelper.deserialize(streamReader);
@@ -102,7 +103,7 @@ public class Telepistons implements ModInitializer {
 						}
 					}
 
-					resourceMap = manager.findResources("", path -> path.toString().endsWith("block/piston_particle.json"));
+					resourceMap = manager.findResources("models", path -> path.toString().endsWith("piston_particle.json"));
 
 					steamOverride = false;
 					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
