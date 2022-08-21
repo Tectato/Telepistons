@@ -10,25 +10,27 @@ import java.util.Random;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
+import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.telepistons.simpleLibs.simpleConfig.SimpleConfig;
-import net.minecraft.block.Block;
-import net.minecraft.block.Material;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.registry.Registry;
 
 public class Telepistons implements ModInitializer {
-	
-	public static final Block PISTON_ARM = new PistonArm(FabricBlockSettings.of(Material.METAL).hardness(80.0f));
+
+	public static Identifier pistonArmModel;
+	public static BakedModel pistonArmBakedModel;
 	public static Random random = new Random();
 	public static boolean emitSteam;
 	public static boolean steamOverride = true;
@@ -39,11 +41,11 @@ public class Telepistons implements ModInitializer {
 	public static Vec3f squishFactorsY;
 	public static Vec3f squishFactorsZ;
 
+	private static final float HALF_TURN = (float) Math.PI;
+	private static final float QUART_TURN = (float) (Math.PI / 2.0f);
+
 	@Override
 	public void onInitialize() {
-        Registry.register(Registry.BLOCK, new Identifier("telepistons", "piston_arm"), PISTON_ARM);
-		//BlockRenderLayerMap.INSTANCE.putBlock(Telepistons.PISTON_ARM, RenderLayer.getTranslucent());
-
 		Identifier scissorPack = new Identifier("telepistons","scissor_pistons");
 		Identifier bellowsPack = new Identifier("telepistons","bellows_pistons");
 		Identifier stickySidesPack = new Identifier("telepistons","sticky_sides");
@@ -54,6 +56,9 @@ public class Telepistons implements ModInitializer {
 			ResourceManagerHelper.registerBuiltinResourcePack(stickySidesPack, container, ResourcePackActivationType.NORMAL);
 			ResourceManagerHelper.registerBuiltinResourcePack(enableSteam, container, ResourcePackActivationType.DEFAULT_ENABLED);
 		});
+
+		pistonArmModel = new Identifier("telepistons","block/piston_arm");
+		ModelLoadingRegistry.INSTANCE.registerModelProvider((modelManager, out) -> out.accept(pistonArmModel));
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
 			new SimpleSynchronousResourceReloadListener() {
@@ -67,7 +72,6 @@ public class Telepistons implements ModInitializer {
 					Map<Identifier, Resource> resourceMap = manager.findResources("models", path -> path.toString().endsWith("piston_arm.json"));
 
 					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
-						System.out.println(entry.getValue().getResourcePackName());
 						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
 							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 							JsonObject json = JsonHelper.deserialize(streamReader);
@@ -120,9 +124,22 @@ public class Telepistons implements ModInitializer {
 						}
 					}
 
-					emitSteam = steamOverride ? (particleCount > 0) : false;
+					emitSteam = steamOverride && (particleCount > 0);
+
+					pistonArmBakedModel = BakedModelManagerHelper.getModel(MinecraftClient.getInstance().getBakedModelManager(), pistonArmModel);
 				}
 			}
 		);
+	}
+
+	public static Quaternion getRotationQuaternion(Direction dir){
+		return switch(dir){
+			case UP -> Quaternion.fromEulerXyz(QUART_TURN, 0.0f, 0.0f);
+			case DOWN -> Quaternion.fromEulerXyz(-QUART_TURN, 0.0f, 0.0f);
+			case NORTH -> Quaternion.fromEulerXyz(0.0f, 0.0f, 0.0f);
+			case SOUTH -> Quaternion.fromEulerXyz(0.0f, HALF_TURN, 0.0f);
+			case EAST -> Quaternion.fromEulerXyz(0.0f, -QUART_TURN, 0.0f);
+			case WEST -> Quaternion.fromEulerXyz(0.0f, QUART_TURN, 0.0f);
+		};
 	}
 }
