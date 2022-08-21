@@ -3,7 +3,6 @@ package net.fabricmc.telepistons.mixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +21,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 @Mixin(PistonBlockEntityRenderer.class)
 public class PistonRendererMixin {
@@ -97,7 +98,7 @@ public class PistonRendererMixin {
                 matrixStack.translate(-.5f, -.5f, -.5f);
 
                 BlockState state = pistonBlockEntity.getCachedState();
-                MinecraftClient.getInstance().getBlockRenderManager().getModelRenderer().render(world, Telepistons.pistonArmBakedModel, state, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(state)), false, Random.create(), 1l, 0);
+                MinecraftClient.getInstance().getBlockRenderManager().getModelRenderer().render(world, Telepistons.pistonArmBakedModel, state, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(state)), false, new Random(), 1l, 0);
 
                 matrixStack.pop();
                 BlockModelRenderer.disableBrightnessCache();

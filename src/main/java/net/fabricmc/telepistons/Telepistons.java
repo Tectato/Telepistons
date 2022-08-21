@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 
@@ -69,10 +70,10 @@ public class Telepistons implements ModInitializer {
 
 				@Override
 				public void reload(ResourceManager manager){
-					Map<Identifier, Resource> resourceMap = manager.findResources("models", path -> path.toString().endsWith("piston_arm.json"));
+					Collection<Identifier> resourceCollection = manager.findResources("models", path -> path.toString().endsWith("piston_arm.json"));
 
-					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
-						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
+					for(Identifier entry : resourceCollection){
+						try(InputStream stream = manager.getResource(entry).getInputStream()) {
 							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 							JsonObject json = JsonHelper.deserialize(streamReader);
 
@@ -107,11 +108,11 @@ public class Telepistons implements ModInitializer {
 						}
 					}
 
-					resourceMap = manager.findResources("models", path -> path.toString().endsWith("piston_particle.json"));
+					resourceCollection = manager.findResources("models", path -> path.toString().endsWith("piston_particle.json"));
 
 					steamOverride = false;
-					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
-						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
+					for(Identifier entry : resourceCollection){
+						try(InputStream stream = manager.getResource(entry).getInputStream()) {
 							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 							JsonObject json = JsonHelper.deserialize(streamReader);
 
