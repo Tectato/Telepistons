@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
@@ -26,7 +27,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 
 public class Telepistons implements ModInitializer {
 
@@ -38,9 +38,9 @@ public class Telepistons implements ModInitializer {
 	public static int particleCount;
 	public static boolean squishArm;
 
-	public static Vec3f squishFactorsX;
-	public static Vec3f squishFactorsY;
-	public static Vec3f squishFactorsZ;
+	public static Vector3f squishFactorsX;
+	public static Vector3f squishFactorsY;
+	public static Vector3f squishFactorsZ;
 
 	private static final float HALF_TURN = (float) Math.PI;
 	private static final float QUART_TURN = (float) (Math.PI / 2.0f);
@@ -69,7 +69,7 @@ public class Telepistons implements ModInitializer {
 				}
 
 				@Override
-				public void reload(ResourceManager manager){
+				public void apply(ResourceManager manager){
 					Collection<Identifier> resourceCollection = manager.findResources("models", path -> path.toString().endsWith("piston_arm.json"));
 
 					for(Identifier entry : resourceCollection){
@@ -83,17 +83,17 @@ public class Telepistons implements ModInitializer {
 							particleCount = Math.max(settings.get("particles").getAsInt(), 0);
 							if(squishArm) {
 								JsonArray factorArr = settings.get("squishedScale").getAsJsonArray();
-								squishFactorsZ = new Vec3f(
+								squishFactorsZ = new Vector3f(
 										factorArr.remove(0).getAsFloat(),
 										factorArr.remove(0).getAsFloat(),
 										factorArr.remove(0).getAsFloat());
 
-								squishFactorsX = new Vec3f(
+								squishFactorsX = new Vector3f(
 										squishFactorsZ.getZ(),
 										squishFactorsZ.getY(),
 										squishFactorsZ.getX());
 
-								squishFactorsY = new Vec3f(
+								squishFactorsY = new Vector3f(
 										squishFactorsZ.getX(),
 										squishFactorsZ.getZ(),
 										squishFactorsZ.getY());
@@ -135,12 +135,12 @@ public class Telepistons implements ModInitializer {
 
 	public static Quaternion getRotationQuaternion(Direction dir){
 		return switch(dir){
-			case UP -> Quaternion.fromEulerXyz(QUART_TURN, 0.0f, 0.0f);
-			case DOWN -> Quaternion.fromEulerXyz(-QUART_TURN, 0.0f, 0.0f);
-			case NORTH -> Quaternion.fromEulerXyz(0.0f, 0.0f, 0.0f);
-			case SOUTH -> Quaternion.fromEulerXyz(0.0f, HALF_TURN, 0.0f);
-			case EAST -> Quaternion.fromEulerXyz(0.0f, -QUART_TURN, 0.0f);
-			case WEST -> Quaternion.fromEulerXyz(0.0f, QUART_TURN, 0.0f);
+			case UP -> new Quaternion(90f, 0f, 0f, true);
+			case DOWN -> new Quaternion(-90f, 0f, 0f, true);
+			case NORTH -> new Quaternion(0f, 0f, 0f, true);
+			case SOUTH -> new Quaternion(0f, 180f, 0f, true);
+			case EAST -> new Quaternion(0f, -90f, 0f, true);
+			case WEST -> new Quaternion(0f, 90f, 0f, true);
 		};
 	}
 }

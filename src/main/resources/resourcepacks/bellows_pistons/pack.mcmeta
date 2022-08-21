@@ -1,9 +1,9 @@
 {
   "pack": {
-    "pack_format": 8,
+    "pack_format": 6,
     "description": "Addon pack for the Telepistons mod"
   },
   "meta": {
-    "game_version": "1.18"
+    "game_version": "1.16"
   }
 }
