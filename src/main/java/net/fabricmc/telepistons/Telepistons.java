@@ -135,12 +135,12 @@ public class Telepistons implements ModInitializer {
 
 	public static Quaternion getRotationQuaternion(Direction dir){
 		return switch(dir){
-			case UP -> Quaternion.fromEulerXyz(QUART_TURN, 0.0f, 0.0f);
-			case DOWN -> Quaternion.fromEulerXyz(-QUART_TURN, 0.0f, 0.0f);
-			case NORTH -> Quaternion.fromEulerXyz(0.0f, 0.0f, 0.0f);
-			case SOUTH -> Quaternion.fromEulerXyz(0.0f, HALF_TURN, 0.0f);
-			case EAST -> Quaternion.fromEulerXyz(0.0f, -QUART_TURN, 0.0f);
-			case WEST -> Quaternion.fromEulerXyz(0.0f, QUART_TURN, 0.0f);
+			case UP -> new Quaternion(90f, 0f, 0f, true);
+			case DOWN -> new Quaternion(-90f, 0f, 0f, true);
+			case NORTH -> new Quaternion(0f, 0f, 0f, true);
+			case SOUTH -> new Quaternion(0f, 180f, 0f, true);
+			case EAST -> new Quaternion(0f, -90f, 0f, true);
+			case WEST -> new Quaternion(0f, 90f, 0f, true);
 		};
 	}
 }
