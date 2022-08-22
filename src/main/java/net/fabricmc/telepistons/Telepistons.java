@@ -134,13 +134,24 @@ public class Telepistons implements ModInitializer {
 	}
 
 	public static Quaternion getRotationQuaternion(Direction dir){
-		return switch(dir){
-			case UP -> new Quaternion(90f, 0f, 0f, true);
-			case DOWN -> new Quaternion(-90f, 0f, 0f, true);
-			case NORTH -> new Quaternion(0f, 0f, 0f, true);
-			case SOUTH -> new Quaternion(0f, 180f, 0f, true);
-			case EAST -> new Quaternion(0f, -90f, 0f, true);
-			case WEST -> new Quaternion(0f, 90f, 0f, true);
-		};
+		// Java 8 does not support switch() expressions, which were only added in Java 14.
+		// Refactored to use a classic switch() statement instead.
+		switch (dir) {
+			case UP:
+				return new Quaternion(90f, 0f, 0f, true);
+			case DOWN:
+				return new Quaternion(-90f, 0f, 0f, true);
+			case NORTH:
+				return new Quaternion(0f, 0f, 0f, true);
+			case SOUTH:
+				return new Quaternion(0f, 180f, 0f, true);
+			case EAST:
+				return new Quaternion(0f, -90f, 0f, true);
+			case WEST:
+				return new Quaternion(0f, 90f, 0f, true);
+			default:
+				// ※ This should never happen.
+				throw new IllegalArgumentException(String.format("An unknown direction (%s) was provided to getRotationQuaternion()! This should never happen.", dir));
+		}
 	}
 }
