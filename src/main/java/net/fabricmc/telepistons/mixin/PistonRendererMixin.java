@@ -2,8 +2,8 @@ package net.fabricmc.telepistons.mixin;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayers;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,40 +46,40 @@ public class PistonRendererMixin {
                     float dy = dir.getOffsetY();
                     float dz = dir.getOffsetZ();
 
-                    Vec3f squishFactorsSrc =
+                    Vector3f squishFactorsSrc =
                             (dx != 0f) ? Telepistons.squishFactorsX
                                     : (dy != 0f) ? Telepistons.squishFactorsY
                                     : Telepistons.squishFactorsZ;
 
-                    Vec3f squishFactors = new Vec3f(squishFactorsSrc.getX(), squishFactorsSrc.getY(), squishFactorsSrc.getZ());
+                    Vector3f squishFactors = new Vector3f(squishFactorsSrc.x(), squishFactorsSrc.y(), squishFactorsSrc.z());
 
                     matrixStack.translate(.5f, .5f, .5f);
 
                     if (extending) {
-                        squishFactors.lerp(new Vec3f(1f, 1f, 1f), dist);
+                        squishFactors.lerp(new Vector3f(1f, 1f, 1f), dist);
 
                         matrixStack.translate(.25f * dx, .25f * dy, .25f * dz);
                         matrixStack.translate(-dx, -dy, -dz);
 
                         matrixStack.scale(
-                                squishFactors.getX(),
-                                squishFactors.getY(),
-                                squishFactors.getZ());
+                                squishFactors.x(),
+                                squishFactors.y(),
+                                squishFactors.z());
 
                         matrixStack.translate(-.5f - .25f * dx, -.5f - .25f * dy, -.5f - .25f * dz);
                         matrixStack.translate(.5f * dx, .5f * dy, .5f * dz);
 
                         matrixStack.translate(.5f * dx, .5f * dy, .5f * dz);
                     } else {
-                        Vec3f squish = new Vec3f(1f, 1f, 1f);
+                        Vector3f squish = new Vector3f(1f, 1f, 1f);
                         squish.lerp(squishFactors, dist);
 
                         matrixStack.translate(-.25f * dx, -.25f * dy, -.25f * dz);
 
                         matrixStack.scale(
-                                squish.getX(),
-                                squish.getY(),
-                                squish.getZ());
+                                squish.x(),
+                                squish.y(),
+                                squish.z());
 
                         matrixStack.translate(-.5f - .25f * dx, -.5f - .25f * dy, -.5f - .25f * dz);
                         matrixStack.translate(-.5f * dx, -.5f * dy, -.5f * dz);

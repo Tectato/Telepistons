@@ -24,8 +24,9 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class Telepistons implements ModInitializer {
 
@@ -37,12 +38,16 @@ public class Telepistons implements ModInitializer {
 	public static int particleCount;
 	public static boolean squishArm;
 
-	public static Vec3f squishFactorsX;
-	public static Vec3f squishFactorsY;
-	public static Vec3f squishFactorsZ;
+	public static Vector3f squishFactorsX;
+	public static Vector3f squishFactorsY;
+	public static Vector3f squishFactorsZ;
 
 	private static final float HALF_TURN = (float) Math.PI;
 	private static final float QUART_TURN = (float) (Math.PI / 2.0f);
+
+	private static final Vector3f UP = new Vector3f(0,1,0);
+	private static final Vector3f FORWARD = new Vector3f(0,0,1);
+	private static final Vector3f RIGHT = new Vector3f(1,0,0);
 
 	@Override
 	public void onInitialize() {
@@ -82,20 +87,20 @@ public class Telepistons implements ModInitializer {
 							particleCount = Math.max(settings.get("particles").getAsInt(), 0);
 							if(squishArm) {
 								JsonArray factorArr = settings.get("squishedScale").getAsJsonArray();
-								squishFactorsZ = new Vec3f(
+								squishFactorsZ = new Vector3f(
 										factorArr.remove(0).getAsFloat(),
 										factorArr.remove(0).getAsFloat(),
 										factorArr.remove(0).getAsFloat());
 
-								squishFactorsX = new Vec3f(
-										squishFactorsZ.getZ(),
-										squishFactorsZ.getY(),
-										squishFactorsZ.getX());
+								squishFactorsX = new Vector3f(
+										squishFactorsZ.z(),
+										squishFactorsZ.y(),
+										squishFactorsZ.x());
 
-								squishFactorsY = new Vec3f(
-										squishFactorsZ.getX(),
-										squishFactorsZ.getZ(),
-										squishFactorsZ.getY());
+								squishFactorsY = new Vector3f(
+										squishFactorsZ.x(),
+										squishFactorsZ.z(),
+										squishFactorsZ.y());
 							}
 
 							System.out.println("[Telepistons] Read settings successfully");
@@ -132,14 +137,14 @@ public class Telepistons implements ModInitializer {
 		);
 	}
 
-	public static Quaternion getRotationQuaternion(Direction dir){
+	public static Quaternionf getRotationQuaternion(Direction dir){
 		return switch(dir){
-			case UP -> Quaternion.fromEulerXyz(QUART_TURN, 0.0f, 0.0f);
-			case DOWN -> Quaternion.fromEulerXyz(-QUART_TURN, 0.0f, 0.0f);
-			case NORTH -> Quaternion.fromEulerXyz(0.0f, 0.0f, 0.0f);
-			case SOUTH -> Quaternion.fromEulerXyz(0.0f, HALF_TURN, 0.0f);
-			case EAST -> Quaternion.fromEulerXyz(0.0f, -QUART_TURN, 0.0f);
-			case WEST -> Quaternion.fromEulerXyz(0.0f, QUART_TURN, 0.0f);
+			case UP -> new Quaternionf(new AxisAngle4f(QUART_TURN, RIGHT));
+			case DOWN -> new Quaternionf(new AxisAngle4f(-QUART_TURN, RIGHT));
+			case NORTH -> new Quaternionf();
+			case SOUTH -> new Quaternionf(new AxisAngle4f(HALF_TURN, UP));
+			case EAST ->  new Quaternionf(new AxisAngle4f(-QUART_TURN, UP));
+			case WEST ->  new Quaternionf(new AxisAngle4f(QUART_TURN, UP));
 		};
 	}
 }
