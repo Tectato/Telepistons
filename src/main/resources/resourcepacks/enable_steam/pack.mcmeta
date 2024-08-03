@@ -1,9 +1,13 @@
 {
   "pack": {
-    "pack_format": 15,
+    "pack_format": 34,
+    "supported_formats": {
+	"min_inclusive": 13,
+	"max_inclusive": 34
+    },
     "description": "Addon pack for the Telepistons mod"
   },
   "meta": {
-    "game_version": "1.20"
+    "game_version": "1.21"
   }
 }
