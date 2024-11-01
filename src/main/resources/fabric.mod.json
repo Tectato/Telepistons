@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Telepistons",
-  "description": "Telescopic and squishy  Piston Arms!",
+  "description": "Telescopic and squishy Piston Arms!",
   "authors": [
     "Tec"
   ],
@@ -18,7 +18,7 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "client": [
       "net.fabricmc.telepistons.Telepistons"
     ]
   },

@@ -10,6 +10,7 @@ import java.util.Random;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -31,7 +32,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-public class Telepistons implements ModInitializer {
+public class Telepistons implements ClientModInitializer {
 
 	public static Identifier pistonArmModel;
 	public static BakedModel pistonArmBakedModel;
@@ -53,7 +54,7 @@ public class Telepistons implements ModInitializer {
 	private static final Vector3f RIGHT = new Vector3f(1,0,0);
 
 	@Override
-	public void onInitialize() {
+	public void onInitializeClient() {
 		Identifier scissorPack = Identifier.of("telepistons","scissor_pistons");
 		Identifier bellowsPack = Identifier.of("telepistons","bellows_pistons");
 		Identifier stickySidesPack = Identifier.of("telepistons","sticky_sides");
