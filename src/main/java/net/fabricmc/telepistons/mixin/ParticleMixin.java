@@ -21,7 +21,7 @@ public class ParticleMixin {
 			float dy = dir.getOffsetY();
 			float dz = dir.getOffsetZ();
 			for(int i=0; i<Telepistons.particleCount; i++) {
-				world.addParticle(ParticleTypes.CLOUD,
+				world.addParticleClient(ParticleTypes.CLOUD,
 						pos.getX()+.5f+(dx*.5f),
 						pos.getY()+.5f+(dy*.5f),
 						pos.getZ()+.5f+(dz*.5f),
