@@ -3,7 +3,8 @@
 	"textures": {
 		"piston_arm": "telepistons:block/piston_arm",
 		"piston_top_sticky": "block/piston_top_sticky",
-		"piston_top": "block/piston_top"
+		"piston_top": "block/piston_top",
+		"particle": "block/piston_top_sticky"
 	},
 	"elements": [
 		{
