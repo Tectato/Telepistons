@@ -4,22 +4,21 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.model.loading.v1.ExtraModelKey;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.model.loading.v1.SimpleUnbakedExtraModel;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.fabricmc.fabric.impl.client.model.loading.ModelLoadingPluginManager;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
+import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
@@ -30,12 +29,11 @@ import net.minecraft.util.math.Vec3d;
 import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 public class Telepistons implements ClientModInitializer {
 
-	public static Identifier pistonArmModel;
-	public static BakedModel pistonArmBakedModel;
+	public static ExtraModelKey<BlockStateModel> pistonArmModel;
+	public static BlockStateModel pistonArmBakedModel;
 	public static Random random = new Random();
 	public static boolean emitSteam;
 	public static boolean steamOverride = true;
@@ -66,8 +64,9 @@ public class Telepistons implements ClientModInitializer {
 			ResourceManagerHelper.registerBuiltinResourcePack(enableSteam, container, ResourcePackActivationType.DEFAULT_ENABLED);
 		});
 
-		pistonArmModel = Identifier.of("telepistons","block/piston_arm");
-		ModelLoadingPlugin.register(pluginContext -> {pluginContext.addModels(pistonArmModel);});
+		var pistonArm = Identifier.of("telepistons","block/piston_arm");
+		pistonArmModel = ExtraModelKey.create(pistonArm::toString);
+		ModelLoadingPlugin.register(pluginContext -> {pluginContext.addModel(pistonArmModel, SimpleUnbakedExtraModel.blockStateModel(pistonArm));});
 
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
 			new SimpleSynchronousResourceReloadListener() {

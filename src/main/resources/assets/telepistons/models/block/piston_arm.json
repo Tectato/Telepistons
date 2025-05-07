@@ -5,7 +5,8 @@
 	"squishedScale": [ 1, 1, 0 ]
     },
     "textures": {
-        "piston_arm": "telepistons:block/piston_arm"
+        "piston_arm": "telepistons:block/piston_arm",
+        "particle": "telepistons:block/piston_arm"
     },
     "display": {
         "gui": {

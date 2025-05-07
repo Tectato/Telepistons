@@ -27,8 +27,9 @@ import net.minecraft.world.World;
 @Mixin(PistonBlockEntityRenderer.class)
 public class PistonRendererMixin {
     @Environment(EnvType.CLIENT)
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/render/block/entity/PistonBlockEntityRenderer;render(Lnet/minecraft/block/entity/PistonBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;II)V")
-    private void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, CallbackInfo info) {
+    @Inject(at = @At("HEAD"),
+            method = "render(Lnet/minecraft/block/entity/PistonBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/util/math/Vec3d;)V")
+    private void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, Vec3d vec3d, CallbackInfo info) {
         if (pistonBlockEntity.isSource()) {
             World world = pistonBlockEntity.getWorld();
             if (world != null) {
@@ -98,7 +99,7 @@ public class PistonRendererMixin {
                 matrixStack.translate(-.5f, -.5f, -.5f);
 
                 BlockState state = pistonBlockEntity.getCachedState();
-                MinecraftClient.getInstance().getBlockRenderManager().getModelRenderer().render(world, Telepistons.pistonArmBakedModel, state, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(state)), false, Random.create(), 1l, 0);
+                MinecraftClient.getInstance().getBlockRenderManager().getModelRenderer().render(world, Telepistons.pistonArmBakedModel, state, blockPos, matrixStack, vertexConsumerProvider, false, 1l, 0);
 
                 matrixStack.pop();
                 BlockModelRenderer.disableBrightnessCache();
