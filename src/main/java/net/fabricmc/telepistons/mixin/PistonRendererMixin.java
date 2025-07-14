@@ -1,7 +1,9 @@
 package net.fabricmc.telepistons.mixin;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import org.joml.Vector3f;
@@ -99,7 +101,9 @@ public class PistonRendererMixin {
                 matrixStack.translate(-.5f, -.5f, -.5f);
 
                 BlockState state = pistonBlockEntity.getCachedState();
-                MinecraftClient.getInstance().getBlockRenderManager().getModelRenderer().render(world, Telepistons.pistonArmBakedModel, state, blockPos, matrixStack, vertexConsumerProvider, false, 1l, 0);
+                RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(state);
+                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
+                MinecraftClient.getInstance().getBlockRenderManager().getModelRenderer().render(world, Telepistons.pistonArmBakedModel.getParts(Random.create(state.getRenderingSeed(blockPos))), state, blockPos, matrixStack, vertexConsumer, false, 0);
 
                 matrixStack.pop();
                 BlockModelRenderer.disableBrightnessCache();
