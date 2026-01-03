@@ -6,9 +6,10 @@
   "mixins": [
   ],
   "client": [
-    "PistonRendererMixin",
+    "ParticleMixin",
     "PistonHeadRenderMethodRedirect",
-    "ParticleMixin"
+    "PistonBlockEntityRendererMixin",
+    "PistonRenderStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

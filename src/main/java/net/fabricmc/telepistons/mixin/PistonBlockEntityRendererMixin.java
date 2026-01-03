@@ -1,11 +1,18 @@
 package net.fabricmc.telepistons.mixin;
 
-import net.minecraft.client.MinecraftClient;
+import net.fabricmc.telepistons.access.PistonRenderStateAccess;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.block.MovingBlockRenderState;
+import net.minecraft.client.render.block.entity.state.PistonBlockEntityRenderState;
+import net.minecraft.client.render.command.ModelCommandRenderer;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.client.render.state.CameraRenderState;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.biome.Biome;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,7 +25,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.telepistons.Telepistons;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.PistonBlockEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.entity.PistonBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,19 +33,27 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 @Mixin(PistonBlockEntityRenderer.class)
-public class PistonRendererMixin {
+public class PistonBlockEntityRendererMixin {
     @Environment(EnvType.CLIENT)
     @Inject(at = @At("HEAD"),
-            method = "render(Lnet/minecraft/block/entity/PistonBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/util/math/Vec3d;)V")
-    private void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, Vec3d vec3d, CallbackInfo info) {
+            method = "render(Lnet/minecraft/client/render/block/entity/state/PistonBlockEntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V")
+    private void render(PistonBlockEntityRenderState pistonBlockEntityRenderState, MatrixStack matrixStack, OrderedRenderCommandQueue orderedRenderCommandQueue, CameraRenderState cameraRenderState, CallbackInfo ci) {
+        PistonRenderStateAccess pistonRenderStateAccess = (PistonRenderStateAccess)pistonBlockEntityRenderState;
+        PistonBlockEntity pistonBlockEntity = pistonRenderStateAccess.getPistonBlockEntity();
+        float fValue = pistonRenderStateAccess.getFValue();
+
+        // pistonBlockEntityRenderState.offsetX/Y/Z aren't interpolated, so this fValue is supposed to bring some interpolation in.
+        float offsetX = pistonBlockEntity.getRenderOffsetX(fValue);
+        float offsetY = pistonBlockEntity.getRenderOffsetY(fValue);
+        float offsetZ = pistonBlockEntity.getRenderOffsetZ(fValue);
+
         if (pistonBlockEntity.isSource()) {
             World world = pistonBlockEntity.getWorld();
             if (world != null) {
-                BlockPos blockPos = pistonBlockEntity.getPos();
                 Direction dir = pistonBlockEntity.getMovementDirection();
-                float dist = 1 - (Math.abs(pistonBlockEntity.getRenderOffsetX(f))
-                        + Math.abs(pistonBlockEntity.getRenderOffsetY(f))
-                        + Math.abs(pistonBlockEntity.getRenderOffsetZ(f)));
+                float dist = 1 - (Math.abs(offsetX)
+                        + Math.abs(offsetY)
+                        + Math.abs(offsetZ));
                 BlockModelRenderer.enableBrightnessCache();
                 matrixStack.push();
 
@@ -89,7 +103,7 @@ public class PistonRendererMixin {
                         matrixStack.translate(-.5f * dx, -.5f * dy, -.5f * dz);
                     }
                 } else {
-                    matrixStack.translate(extendRate * (double) pistonBlockEntity.getRenderOffsetX(f), extendRate * (double) pistonBlockEntity.getRenderOffsetY(f), extendRate * (double) pistonBlockEntity.getRenderOffsetZ(f));
+                    matrixStack.translate(extendRate * (double) offsetX, extendRate * (double) offsetY, extendRate * (double) offsetZ);
 
                     if (!pistonBlockEntity.isExtending()) {
                         matrixStack.translate(-.5f * dir.getOffsetX(), -.5f * dir.getOffsetY(), -.5f * dir.getOffsetZ());
@@ -100,10 +114,11 @@ public class PistonRendererMixin {
                 matrixStack.multiply(Telepistons.getRotationQuaternion(pistonBlockEntity.isExtending() ? dir : dir.getOpposite()));
                 matrixStack.translate(-.5f, -.5f, -.5f);
 
-                BlockState state = pistonBlockEntity.getCachedState();
+                BlockState state = pistonBlockEntityRenderState.blockState;
                 RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(state);
-                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-                MinecraftClient.getInstance().getBlockRenderManager().getModelRenderer().render(world, Telepistons.pistonArmBakedModel.getParts(Random.create(state.getRenderingSeed(blockPos))), state, blockPos, matrixStack, vertexConsumer, false, 0);
+
+                orderedRenderCommandQueue.submitBlockStateModel(matrixStack, renderLayer, Telepistons.pistonArmBakedModel,
+                        1, 1, 1, pistonBlockEntityRenderState.lightmapCoordinates, OverlayTexture.DEFAULT_UV, 0);
 
                 matrixStack.pop();
                 BlockModelRenderer.disableBrightnessCache();
@@ -111,8 +126,10 @@ public class PistonRendererMixin {
         }
     }
 
-    @Shadow
-    private void renderModel(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i) {
-
+    @Inject(at = @At("RETURN"), method = "updateRenderState(Lnet/minecraft/block/entity/PistonBlockEntity;Lnet/minecraft/client/render/block/entity/state/PistonBlockEntityRenderState;FLnet/minecraft/util/math/Vec3d;Lnet/minecraft/client/render/command/ModelCommandRenderer$CrumblingOverlayCommand;)V")
+    private void onUpdateRenderState(PistonBlockEntity pistonBlockEntity, PistonBlockEntityRenderState pistonBlockEntityRenderState, float f, Vec3d vec3d, ModelCommandRenderer.CrumblingOverlayCommand crumblingOverlayCommand, CallbackInfo ci) {
+        ((PistonRenderStateAccess)pistonBlockEntityRenderState).setPistonBlockEntity(pistonBlockEntity);
+        ((PistonRenderStateAccess)pistonBlockEntityRenderState).setFValue(f);
+        ((PistonRenderStateAccess)pistonBlockEntityRenderState).setCrumblingOverlayCommand(crumblingOverlayCommand);
     }
 }
