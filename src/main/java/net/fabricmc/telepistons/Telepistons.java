@@ -22,6 +22,7 @@ import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
@@ -58,10 +59,10 @@ public class Telepistons implements ClientModInitializer {
 		Identifier stickySidesPack = Identifier.of("telepistons","sticky_sides");
 		Identifier enableSteam = Identifier.of("telepistons","enable_steam");
 		FabricLoader.getInstance().getModContainer("telepistons").ifPresent(container -> {
-			ResourceManagerHelper.registerBuiltinResourcePack(scissorPack, container, ResourcePackActivationType.NORMAL);
-			ResourceManagerHelper.registerBuiltinResourcePack(bellowsPack, container, ResourcePackActivationType.NORMAL);
-			ResourceManagerHelper.registerBuiltinResourcePack(stickySidesPack, container, ResourcePackActivationType.NORMAL);
-			ResourceManagerHelper.registerBuiltinResourcePack(enableSteam, container, ResourcePackActivationType.DEFAULT_ENABLED);
+			ResourceManagerHelper.registerBuiltinResourcePack(scissorPack, container, Text.literal("Scissor Pistons"), ResourcePackActivationType.NORMAL);
+			ResourceManagerHelper.registerBuiltinResourcePack(bellowsPack, container, Text.literal("Bellows Pistons"), ResourcePackActivationType.NORMAL);
+			ResourceManagerHelper.registerBuiltinResourcePack(stickySidesPack, container, Text.literal("Sticky Piston Sides"), ResourcePackActivationType.NORMAL);
+			ResourceManagerHelper.registerBuiltinResourcePack(enableSteam, container, Text.literal("Piston Steam"), ResourcePackActivationType.DEFAULT_ENABLED);
 		});
 
 		var pistonArm = Identifier.of("telepistons","block/piston_arm");
