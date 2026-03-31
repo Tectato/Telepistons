@@ -21,14 +21,14 @@ package net.fabricmc.telepistons.simpleLibs.simpleRay;
  * THE SOFTWARE.
  */
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class SimpleRay {
 
-    private Vec3d origin;
-    private final Vec3d reciDir;
+    private Vec3 origin;
+    private final Vec3 reciDir;
     private final int signX;
     private final int signY;
     private final int signZ;
@@ -40,10 +40,10 @@ public class SimpleRay {
      * @param origin - Camera position
      * @param dir - Camera facing direction
      */
-    public SimpleRay(Vec3d origin, Vec3d dir ) {
+    public SimpleRay(Vec3 origin, Vec3 dir ) {
         this.origin = origin;
 
-        this.reciDir = new Vec3d( 1.0 / dir.x, 1.0 / dir.y, 1.0 / dir.z );
+        this.reciDir = new Vec3( 1.0 / dir.x, 1.0 / dir.y, 1.0 / dir.z );
         this.signX = (reciDir.x < 0.0) ? 1 : 0;
         this.signY = (reciDir.y < 0.0) ? 1 : 0;
         this.signZ = (reciDir.z < 0.0) ? 1 : 0;
@@ -56,8 +56,8 @@ public class SimpleRay {
      *
      * @param pos - Offset position
      */
-    public void offset( BlockPos pos ) {
-        offset( new Vec3d( pos.getX(), pos.getY(), pos.getZ() ) );
+    public void offset(BlockPos pos ) {
+        offset( new Vec3( pos.getX(), pos.getY(), pos.getZ() ) );
     }
 
     /**
@@ -66,7 +66,7 @@ public class SimpleRay {
      * @param vector - Offset vector
      * @see SimpleRay#offset(BlockPos)
      */
-    public void offset( Vec3d vector ) {
+    public void offset(Vec3 vector ) {
         origin = origin.subtract( vector );
     }
 
@@ -74,7 +74,7 @@ public class SimpleRay {
      * Returns current offset position. Example usage:
      * BlockPos pos = ray.getOffset();
      */
-    public Vec3d getOffset() {
+    public Vec3 getOffset() {
         return origin;
     }
 
@@ -86,10 +86,10 @@ public class SimpleRay {
      * @param box - box to check intersection with
      * @see SimpleRay#offset(BlockPos)
      */
-    public boolean intersects( Box box ) {
-        Vec3d[] bounds = new Vec3d[2];
-        bounds[0] = new Vec3d( box.minX, box.minY, box.minZ );
-        bounds[1] = new Vec3d( box.maxX, box.maxY, box.maxZ );
+    public boolean intersects(AABB box ) {
+        Vec3[] bounds = new Vec3[2];
+        bounds[0] = new Vec3( box.minX, box.minY, box.minZ );
+        bounds[1] = new Vec3( box.maxX, box.maxY, box.maxZ );
 
         double txMin, txMax, tyMin, tyMax, tzMin, tzMax;
 

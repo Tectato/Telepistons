@@ -1,32 +1,32 @@
 package net.fabricmc.telepistons.mixin;
 
 import net.fabricmc.telepistons.access.PistonRenderStateAccess;
-import net.minecraft.block.entity.PistonBlockEntity;
-import net.minecraft.client.render.block.entity.state.PistonBlockEntityRenderState;
-import net.minecraft.client.render.command.ModelCommandRenderer;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+import net.minecraft.client.renderer.blockentity.state.PistonHeadRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(PistonBlockEntityRenderState.class)
+@Mixin(PistonHeadRenderState.class)
 public class PistonRenderStateMixin implements PistonRenderStateAccess {
     @Unique
-    public PistonBlockEntity pistonBlockEntity;
+    public PistonMovingBlockEntity pistonBlockEntity;
 
     @Unique
     public float f;
 
     @Unique
-    public ModelCommandRenderer.CrumblingOverlayCommand crumblingOverlayCommand;
+    public ModelFeatureRenderer.CrumblingOverlay crumblingOverlayCommand;
 
     @Unique
     @Override
-    public PistonBlockEntity getPistonBlockEntity() {
+    public PistonMovingBlockEntity getPistonBlockEntity() {
         return pistonBlockEntity;
     }
 
     @Unique
     @Override
-    public void setPistonBlockEntity(PistonBlockEntity pistonBlockEntity) {
+    public void setPistonBlockEntity(PistonMovingBlockEntity pistonBlockEntity) {
         this.pistonBlockEntity = pistonBlockEntity;
     }
 
@@ -41,12 +41,12 @@ public class PistonRenderStateMixin implements PistonRenderStateAccess {
     }
 
     @Override
-    public ModelCommandRenderer.CrumblingOverlayCommand getCrumblingOverlayCommand() {
+    public ModelFeatureRenderer.CrumblingOverlay getCrumblingOverlayCommand() {
         return this.crumblingOverlayCommand;
     }
 
     @Override
-    public void setCrumblingOverlayCommand(ModelCommandRenderer.CrumblingOverlayCommand crumblingOverlayCommand) {
+    public void setCrumblingOverlayCommand(ModelFeatureRenderer.CrumblingOverlay crumblingOverlayCommand) {
         this.crumblingOverlayCommand = crumblingOverlayCommand;
     }
 }

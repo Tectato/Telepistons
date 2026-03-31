@@ -1,15 +1,15 @@
 package net.fabricmc.telepistons.access;
 
-import net.minecraft.block.entity.PistonBlockEntity;
-import net.minecraft.client.render.command.ModelCommandRenderer;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 
 public interface PistonRenderStateAccess {
-    PistonBlockEntity getPistonBlockEntity();
-    void setPistonBlockEntity(PistonBlockEntity pistonBlockEntity);
+    PistonMovingBlockEntity getPistonBlockEntity();
+    void setPistonBlockEntity(PistonMovingBlockEntity pistonBlockEntity);
 
     float getFValue();
     void setFValue(float f);
 
-    ModelCommandRenderer.CrumblingOverlayCommand getCrumblingOverlayCommand();
-    void setCrumblingOverlayCommand(ModelCommandRenderer.CrumblingOverlayCommand crumblingOverlayCommand);
+    ModelFeatureRenderer.CrumblingOverlay getCrumblingOverlayCommand();
+    void setCrumblingOverlayCommand(ModelFeatureRenderer.CrumblingOverlay crumblingOverlayCommand);
 }

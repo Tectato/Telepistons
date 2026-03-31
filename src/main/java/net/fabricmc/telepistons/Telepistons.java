@@ -17,15 +17,15 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.render.model.BlockStateModel;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -40,9 +40,9 @@ public class Telepistons implements ClientModInitializer {
 	public static int particleCount;
 	public static boolean squishArm;
 
-	public static Vec3d squishFactorsX;
-	public static Vec3d squishFactorsY;
-	public static Vec3d squishFactorsZ;
+	public static Vec3 squishFactorsX;
+	public static Vec3 squishFactorsY;
+	public static Vec3 squishFactorsZ;
 
 	private static final float HALF_TURN = (float) Math.PI;
 	private static final float QUART_TURN = (float) (Math.PI / 2.0f);
@@ -53,10 +53,10 @@ public class Telepistons implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		Identifier scissorPack = Identifier.of("telepistons","scissor_pistons");
-		Identifier bellowsPack = Identifier.of("telepistons","bellows_pistons");
-		Identifier stickySidesPack = Identifier.of("telepistons","sticky_sides");
-		Identifier enableSteam = Identifier.of("telepistons","enable_steam");
+		ResourceLocation scissorPack = ResourceLocation.fromNamespaceAndPath("telepistons","scissor_pistons");
+		ResourceLocation bellowsPack = ResourceLocation.fromNamespaceAndPath("telepistons","bellows_pistons");
+		ResourceLocation stickySidesPack = ResourceLocation.fromNamespaceAndPath("telepistons","sticky_sides");
+		ResourceLocation enableSteam = ResourceLocation.fromNamespaceAndPath("telepistons","enable_steam");
 		FabricLoader.getInstance().getModContainer("telepistons").ifPresent(container -> {
 			ResourceManagerHelper.registerBuiltinResourcePack(scissorPack, container, ResourcePackActivationType.NORMAL);
 			ResourceManagerHelper.registerBuiltinResourcePack(bellowsPack, container, ResourcePackActivationType.NORMAL);
@@ -64,25 +64,25 @@ public class Telepistons implements ClientModInitializer {
 			ResourceManagerHelper.registerBuiltinResourcePack(enableSteam, container, ResourcePackActivationType.DEFAULT_ENABLED);
 		});
 
-		var pistonArm = Identifier.of("telepistons","block/piston_arm");
+		var pistonArm = ResourceLocation.fromNamespaceAndPath("telepistons","block/piston_arm");
 		pistonArmModel = ExtraModelKey.create(pistonArm::toString);
 		ModelLoadingPlugin.register(pluginContext -> {pluginContext.addModel(pistonArmModel, SimpleUnbakedExtraModel.blockStateModel(pistonArm));});
 
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
+		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
 			new SimpleSynchronousResourceReloadListener() {
 				@Override
-				public Identifier getFabricId(){
-					return Identifier.of("telepistons","models");
+				public ResourceLocation getFabricId(){
+					return ResourceLocation.fromNamespaceAndPath("telepistons","models");
 				}
 
 				@Override
-				public void reload(ResourceManager manager){
-					Map<Identifier, Resource> resourceMap = manager.findResources("models", path -> path.toString().endsWith("piston_arm.json"));
+				public void onResourceManagerReload(ResourceManager manager){
+					Map<ResourceLocation, Resource> resourceMap = manager.listResources("models", path -> path.toString().endsWith("piston_arm.json"));
 
-					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
-						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
+					for(Map.Entry<ResourceLocation, Resource> entry : resourceMap.entrySet()){
+						try(InputStream stream = manager.getResource(entry.getKey()).get().open()) {
 							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-							JsonObject json = JsonHelper.deserialize(streamReader);
+							JsonObject json = GsonHelper.parse(streamReader);
 
 							JsonObject settings = json.get("telepistons").getAsJsonObject();
 
@@ -90,20 +90,20 @@ public class Telepistons implements ClientModInitializer {
 							particleCount = Math.max(settings.get("particles").getAsInt(), 0);
 							if(squishArm) {
 								JsonArray factorArr = settings.get("squishedScale").getAsJsonArray();
-								squishFactorsZ = new Vec3d(
+								squishFactorsZ = new Vec3(
 										factorArr.remove(0).getAsFloat(),
 										factorArr.remove(0).getAsFloat(),
 										factorArr.remove(0).getAsFloat());
 
-								squishFactorsX = new Vec3d(
-										squishFactorsZ.getZ(),
-										squishFactorsZ.getY(),
-										squishFactorsZ.getX());
+								squishFactorsX = new Vec3(
+										squishFactorsZ.z(),
+										squishFactorsZ.y(),
+										squishFactorsZ.x());
 
-								squishFactorsY = new Vec3d(
-										squishFactorsZ.getX(),
-										squishFactorsZ.getZ(),
-										squishFactorsZ.getY());
+								squishFactorsY = new Vec3(
+										squishFactorsZ.x(),
+										squishFactorsZ.z(),
+										squishFactorsZ.y());
 							}
 
 							System.out.println("[Telepistons] Read settings successfully");
@@ -115,13 +115,13 @@ public class Telepistons implements ClientModInitializer {
 						}
 					}
 
-					resourceMap = manager.findResources("models", path -> path.toString().endsWith("piston_particle.json"));
+					resourceMap = manager.listResources("models", path -> path.toString().endsWith("piston_particle.json"));
 
 					steamOverride = false;
-					for(Map.Entry<Identifier, Resource> entry : resourceMap.entrySet()){
-						try(InputStream stream = manager.getResource(entry.getKey()).get().getInputStream()) {
+					for(Map.Entry<ResourceLocation, Resource> entry : resourceMap.entrySet()){
+						try(InputStream stream = manager.getResource(entry.getKey()).get().open()) {
 							BufferedReader streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-							JsonObject json = JsonHelper.deserialize(streamReader);
+							JsonObject json = GsonHelper.parse(streamReader);
 
 							JsonObject settings = json.get("telepistons").getAsJsonObject();
 							steamOverride = settings.get("particleOverride").getAsBoolean();
@@ -134,7 +134,7 @@ public class Telepistons implements ClientModInitializer {
 
 					emitSteam = steamOverride && (particleCount > 0);
 
-					BakedModelManager modelManager = net.minecraft.client.MinecraftClient.getInstance().getBakedModelManager();
+					ModelManager modelManager = net.minecraft.client.Minecraft.getInstance().getModelManager();
 					pistonArmBakedModel = modelManager.getModel(pistonArmModel);
 					if(pistonArmBakedModel == null) System.out.println("Baked Model is Null!");
 				}
