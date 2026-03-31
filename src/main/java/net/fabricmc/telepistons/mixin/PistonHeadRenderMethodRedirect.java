@@ -1,5 +1,8 @@
 package net.fabricmc.telepistons.mixin;
 
+import net.minecraft.client.render.block.MovingBlockRenderState;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.world.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,17 +24,18 @@ abstract class PistonHeadRenderMethodRedirect {
 	@Environment(EnvType.CLIENT)
 
 	@Redirect(
-			method = "render(Lnet/minecraft/block/entity/PistonBlockEntity;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/util/math/Vec3d;)V",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/PistonBlockEntityRenderer;renderModel(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/world/World;ZI)V"))
-	private void renderRedirect(PistonBlockEntityRenderer PBER, BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i) {
+			method = "updateRenderState(Lnet/minecraft/block/entity/PistonBlockEntity;Lnet/minecraft/client/render/block/entity/state/PistonBlockEntityRenderState;FLnet/minecraft/util/math/Vec3d;Lnet/minecraft/client/render/command/ModelCommandRenderer$CrumblingOverlayCommand;)V",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/block/entity/PistonBlockEntityRenderer;renderModel(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/world/World;)Lnet/minecraft/client/render/block/MovingBlockRenderState;"))
+	private MovingBlockRenderState renderRedirect(BlockPos blockPos, BlockState blockState, RegistryEntry<Biome> biome, World world) {
 		if(blockState.isOf(Blocks.PISTON_HEAD) && !blockState.get(PistonHeadBlock.SHORT)) {
-			this.renderModel(blockPos, blockState.with(PistonHeadBlock.SHORT, true), matrixStack, vertexConsumerProvider, world, bl, i);
+			return renderModel(blockPos, blockState.with(PistonHeadBlock.SHORT, true), biome, world);
 		} else {
-			this.renderModel(blockPos, blockState, matrixStack, vertexConsumerProvider, world, bl, i);
+			return renderModel(blockPos, blockState, biome, world);
 		}
 	}
 	
-	@Shadow private void renderModel(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i) {
-		
-	}
+	@Shadow
+	private static MovingBlockRenderState renderModel(BlockPos pos, BlockState blockState, RegistryEntry<Biome> biome, World world) {
+        return null;
+    }
 }
