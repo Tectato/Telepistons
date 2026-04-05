@@ -1,6 +1,7 @@
 package net.fabricmc.telepistons.mixin;
 
 import net.fabricmc.telepistons.access.PistonRenderStateAccess;
+import net.minecraft.client.renderer.block.MovingBlockRenderState;
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import net.minecraft.client.renderer.blockentity.state.PistonHeadRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
@@ -11,6 +12,9 @@ import org.spongepowered.asm.mixin.Unique;
 public class PistonRenderStateMixin implements PistonRenderStateAccess {
     @Unique
     public PistonMovingBlockEntity pistonBlockEntity;
+
+    @Unique
+    public MovingBlockRenderState arm;
 
     @Unique
     public float f;
@@ -31,22 +35,12 @@ public class PistonRenderStateMixin implements PistonRenderStateAccess {
     }
 
     @Override
-    public float getFValue() {
-        return f;
+    public MovingBlockRenderState getArm() {
+        return arm;
     }
 
     @Override
-    public void setFValue(float f) {
-        this.f = f;
-    }
-
-    @Override
-    public ModelFeatureRenderer.CrumblingOverlay getCrumblingOverlayCommand() {
-        return this.crumblingOverlayCommand;
-    }
-
-    @Override
-    public void setCrumblingOverlayCommand(ModelFeatureRenderer.CrumblingOverlay crumblingOverlayCommand) {
-        this.crumblingOverlayCommand = crumblingOverlayCommand;
+    public void setArm(MovingBlockRenderState value) {
+        this.arm = value;
     }
 }

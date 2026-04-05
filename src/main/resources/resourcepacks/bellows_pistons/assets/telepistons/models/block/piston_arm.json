@@ -2,7 +2,7 @@
 	"telepistons": {
 		"squish":"true",
 		"particles":"4",
-		"squishedScale": [ 1.25, 1.25, 0 ]
+		"squishedScale": [ 1.15, 1.15, 0 ]
     	},
 	"textures": {
 		"0": "telepistons:block/piston_arm",
