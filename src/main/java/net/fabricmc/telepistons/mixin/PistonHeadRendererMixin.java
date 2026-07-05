@@ -98,7 +98,7 @@ public class PistonHeadRendererMixin {
             }
         }
 
-        submitNodeCollector.submitMovingBlock(poseStack, arm);
+        submitNodeCollector.submitMovingBlock(poseStack, arm, 0);
 
         poseStack.popPose();
     }
