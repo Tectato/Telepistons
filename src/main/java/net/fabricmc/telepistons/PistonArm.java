@@ -13,10 +13,10 @@ public class PistonArm extends DirectionalBlock {
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.UP));
 	}
 
-	@Override
+	/*@Override
 	protected MapCodec<? extends DirectionalBlock> codec() {
 		return simpleCodec(PistonArm::new);
-	}
+	}*/
 
 	protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
